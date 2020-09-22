@@ -134,7 +134,7 @@
                     android:layout_height="@dimen/_50dp"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/ic_draw_delete_forever_white" />
+                    android:src="@drawable/icon_checkmark_white" />
 
                 <ImageButton
                     android:id="@+id/drawing_button_color"
