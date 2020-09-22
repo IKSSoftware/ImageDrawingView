@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="@dimen/_10dp"
-                android:weightSum="5">
+                android:weightSum="6">
 
                 <ImageButton
                     android:id="@+id/drawing_button_undo"
@@ -134,7 +134,7 @@
                     android:layout_height="@dimen/_50dp"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/icon_checkmark_white" />
+                    android:src="@drawable/ic_draw_delete_forever_white" />
 
                 <ImageButton
                     android:id="@+id/drawing_button_color"
@@ -151,6 +151,14 @@
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
                     android:src="@drawable/ic_draw_format_shapes_white" />
+
+                <ImageButton
+                    android:id="@+id/drawing_button_location"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_50dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_location_no" />
             </LinearLayout>
 
         </LinearLayout>

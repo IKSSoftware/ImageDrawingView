@@ -32,8 +32,14 @@ class MainActivity : AppCompatActivity() {
 
         drawImageView = findViewById<ImageDrawingView>(R.id.image_drawing)
         drawImageView.loadImage(R.drawable.iphonex)
+        drawImageView.setDrawingCallback(object : DrawingViewCallback {
+            override fun onClickLocation() {
+                drawImageView.setHasLocation(true)
+            }
+        })
 
         imageTest = findViewById<ImageView>(R.id.image_test)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

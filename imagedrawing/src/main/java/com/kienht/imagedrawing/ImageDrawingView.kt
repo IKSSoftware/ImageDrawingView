@@ -61,6 +61,9 @@ class ImageDrawingView @JvmOverloads constructor(
     private val thicknessSeekBar: SeekBar
     private val inputFake: EditText
     private val loadingLayout: FrameLayout
+    private val buttonLocation: ImageButton
+
+    private var drawingViewCallback: DrawingViewCallback? = null
 
     private val glideCustomerTarget: CustomTarget<Bitmap>
 
@@ -71,7 +74,6 @@ class ImageDrawingView @JvmOverloads constructor(
         freeDrawView = findViewById(R.id.free_draw_view)
         loadingLayout = findViewById(R.id.layout_loading)
         inputFake = findViewById(R.id.drawing_input_fake)
-
         inputFake.isCursorVisible = false
         inputFake.doAfterTextChanged {
             stickerView.text = it?.toString()
@@ -81,6 +83,13 @@ class ImageDrawingView @JvmOverloads constructor(
             intArrayOf(BLACK, WHITE, RED, GREEN, BLUE, CYAN, YELLOW, MAGENTA, *ColorPalette.Primary)
 
         freeDrawView.setOnTouchDrawViewListener(this)
+
+        buttonLocation = findViewById(R.id.drawing_button_location)
+        buttonLocation.setOnClickListener {
+            drawingViewCallback?.let {
+                it.onClickLocation()
+            }
+        }
 
         val undoButton = findViewById<ImageButton>(R.id.drawing_button_undo)
         undoButton.setOnClickListener { freeDrawView.undoLast() }
@@ -217,6 +226,10 @@ class ImageDrawingView @JvmOverloads constructor(
 
     override fun onStopTrackingTouch(seekBar: SeekBar) = Unit
 
+    fun setDrawingCallback(callback: DrawingViewCallback) {
+        this.drawingViewCallback = callback
+    }
+
     @WorkerThread
     fun createBitmap(): Bitmap = stickerView.createBitmap()
 
@@ -242,6 +255,12 @@ class ImageDrawingView @JvmOverloads constructor(
             .fitCenter()
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(glideCustomerTarget)
+    }
+
+    @MainThread
+    fun setHasLocation(has: Boolean) {
+        val imgRes: Int = if (has) R.drawable.ic_location_yes else R.drawable.ic_location_no
+        buttonLocation.setImageResource(imgRes)
     }
 
     @MainThread
