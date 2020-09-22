@@ -1,11 +1,16 @@
 package com.kienht.imagedrawing
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -22,6 +27,8 @@ import java.io.FileOutputStream
  * @since 25/10/2019
  */
 class MainActivity : AppCompatActivity() {
+
+    private val PICK_IMG_REQUEST_CODE =  1000
 
     lateinit var drawImageView: ImageDrawingView
     lateinit var imageTest: ImageView
@@ -40,6 +47,10 @@ class MainActivity : AppCompatActivity() {
 
         imageTest = findViewById<ImageView>(R.id.image_test)
 
+        val btnSelectImg = findViewById<ImageButton>(R.id.button_select_image)
+        btnSelectImg.setOnClickListener {
+            openGalleryForImage()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -55,6 +66,27 @@ class MainActivity : AppCompatActivity() {
         }
         return true
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == PICK_IMG_REQUEST_CODE){
+//            drawImageView.setImageURI(data?.data) // handle chosen image
+            data?.data?.let { uri ->
+//                URIPathHelper().getPath(this, uri)?.let {
+//                    Log.d("chi.trinh", "onActivityResult: $it")
+//                    drawImageView.loadImage(it)
+//                }
+                drawImageView.loadImage(uri)
+            }
+        }
+    }
+
+    private fun openGalleryForImage() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, PICK_IMG_REQUEST_CODE)
+    }
+
 
     private fun getBitmap() {
         lifecycleScope.launch {

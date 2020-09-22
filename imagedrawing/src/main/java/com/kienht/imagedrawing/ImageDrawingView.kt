@@ -1,10 +1,13 @@
 package com.kienht.imagedrawing
 
 import android.content.Context
-import android.graphics.*
-
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color.*
+import android.graphics.Matrix
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.text.Layout
 import android.util.AttributeSet
 import android.view.inputmethod.InputMethodManager
@@ -21,7 +24,6 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.color.ColorPalette
 import com.afollestad.materialdialogs.color.colorChooser
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
-
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
@@ -201,6 +203,11 @@ class ImageDrawingView @JvmOverloads constructor(
             override fun onLoadCleared(placeholder: Drawable?) {
 
             }
+
+            override fun onLoadFailed(errorDrawable: Drawable?) {
+                super.onLoadFailed(errorDrawable)
+                imageView.setImageDrawable(errorDrawable)
+            }
         }
     }
 
@@ -232,6 +239,18 @@ class ImageDrawingView @JvmOverloads constructor(
 
     @WorkerThread
     fun createBitmap(): Bitmap = stickerView.createBitmap()
+
+    @MainThread
+    fun loadImage(uri: Uri) {
+        loadingLayout.isVisible = true
+        Glide.with(imageView)
+            .asBitmap()
+            .load(uri)
+            .dontAnimate()
+            .fitCenter()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(glideCustomerTarget)
+    }
 
     @MainThread
     fun loadImage(path: String) {
