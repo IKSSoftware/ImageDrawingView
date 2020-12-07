@@ -152,7 +152,7 @@
                     android:layout_height="@dimen/_50dp"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/ic_draw_redo_white" />
+                    android:src="@drawable/ic_draw_free_line_white" />
 
                 <ImageButton
                     android:id="@+id/drawing_button_text"

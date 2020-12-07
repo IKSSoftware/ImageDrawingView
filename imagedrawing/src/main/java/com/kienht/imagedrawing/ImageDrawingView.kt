@@ -71,7 +71,7 @@ class ImageDrawingView @JvmOverloads constructor(
 
     private val glideCustomerTarget: CustomTarget<Bitmap>
 
-    val shapeData = listOf(
+    private val shapeData = listOf(
         ShapeData(R.drawable.ic_draw_free_line_white, "Free drawing"),
         ShapeData(R.drawable.ic_draw_line_white, "Line drawing"),
         ShapeData(R.drawable.ic_draw_rectangle_shape_white, "Rectangle drawing")

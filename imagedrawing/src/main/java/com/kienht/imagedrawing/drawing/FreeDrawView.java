@@ -49,7 +49,7 @@ public class FreeDrawView extends View implements View.OnTouchListener, OnDrawBi
     private ArrayList<HistoryPath> mPaths = new ArrayList<>();
     private ArrayList<HistoryPath> mCanceledPaths = new ArrayList<>();
 
-    public ShapeType shapeType = ShapeType.Rectangle;
+    public ShapeType shapeType = ShapeType.Free;
 
     @ColorInt
     private int mPaintColor = DEFAULT_COLOR;
