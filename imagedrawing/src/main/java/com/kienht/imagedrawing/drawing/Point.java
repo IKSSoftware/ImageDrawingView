@@ -19,6 +19,11 @@ class Point implements Parcelable, Serializable {
         x = y = -1;
     }
 
+    Point(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
     @Override
     public String toString() {
         return "" + x + " : " + y + " - ";

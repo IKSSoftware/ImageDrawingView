@@ -24,11 +24,16 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.color.ColorPalette
 import com.afollestad.materialdialogs.color.colorChooser
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.afollestad.materialdialogs.list.customListAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.kienht.imagedrawing.adapter.ItemClickListener
+import com.kienht.imagedrawing.adapter.ShapeAdapter
+import com.kienht.imagedrawing.adapter.ShapeData
 import com.kienht.imagedrawing.drawing.FreeDrawView
+import com.kienht.imagedrawing.drawing.ShapeType
 import com.kienht.imagedrawing.sticker.*
 
 /**
@@ -63,11 +68,14 @@ class ImageDrawingView @JvmOverloads constructor(
     private val thicknessSeekBar: SeekBar
     private val inputFake: EditText
     private val loadingLayout: FrameLayout
-    private val buttonLocation: ImageButton
-
-    private var drawingViewCallback: DrawingViewCallback? = null
 
     private val glideCustomerTarget: CustomTarget<Bitmap>
+
+    val shapeData = listOf(
+        ShapeData(R.drawable.ic_draw_free_line_white, "Free drawing"),
+        ShapeData(R.drawable.ic_draw_line_white, "Line drawing"),
+        ShapeData(R.drawable.ic_draw_rectangle_shape_white, "Rectangle drawing")
+    )
 
     init {
         inflate(context, R.layout.draw_image_view, this)
@@ -76,6 +84,7 @@ class ImageDrawingView @JvmOverloads constructor(
         freeDrawView = findViewById(R.id.free_draw_view)
         loadingLayout = findViewById(R.id.layout_loading)
         inputFake = findViewById(R.id.drawing_input_fake)
+
         inputFake.isCursorVisible = false
         inputFake.doAfterTextChanged {
             stickerView.text = it?.toString()
@@ -85,13 +94,6 @@ class ImageDrawingView @JvmOverloads constructor(
             intArrayOf(BLACK, WHITE, RED, GREEN, BLUE, CYAN, YELLOW, MAGENTA, *ColorPalette.Primary)
 
         freeDrawView.setOnTouchDrawViewListener(this)
-
-        buttonLocation = findViewById(R.id.drawing_button_location)
-        buttonLocation.setOnClickListener {
-            drawingViewCallback?.let {
-                it.onClickLocation()
-            }
-        }
 
         val undoButton = findViewById<ImageButton>(R.id.drawing_button_undo)
         undoButton.setOnClickListener { freeDrawView.undoLast() }
@@ -116,6 +118,35 @@ class ImageDrawingView @JvmOverloads constructor(
                 ) { _, color ->
                     freeDrawView.paintColor = color
                 }
+            }
+        }
+        val shapeButton = findViewById<ImageButton>(R.id.drawing_button_shape)
+        shapeButton.setOnClickListener {
+            MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                if (context is AppCompatActivity) {
+                    lifecycleOwner(context)
+                }
+                cornerRadius(16f)
+                customListAdapter(
+                    ShapeAdapter(shapeData, object : ItemClickListener {
+                        override fun onItemClick(position: Int) {
+                            freeDrawView.shapeType = when (position) {
+                                0 -> ShapeType.Free
+                                1 -> ShapeType.Line
+                                2 -> ShapeType.Rectangle
+                                else -> ShapeType.Line
+                            }
+                            shapeButton.setImageResource(
+                                when (position) {
+                                    0 -> R.drawable.ic_draw_free_line_white
+                                    1 -> R.drawable.ic_draw_line_white
+                                    2 -> R.drawable.ic_draw_rectangle_shape_white
+                                    else -> R.drawable.ic_draw_free_line_white
+                                }
+                            )
+                            dismiss()
+                        }
+                    }))
             }
         }
         val textButton = findViewById<ImageButton>(R.id.drawing_button_text)
@@ -233,10 +264,6 @@ class ImageDrawingView @JvmOverloads constructor(
 
     override fun onStopTrackingTouch(seekBar: SeekBar) = Unit
 
-    fun setDrawingCallback(callback: DrawingViewCallback) {
-        this.drawingViewCallback = callback
-    }
-
     @WorkerThread
     fun createBitmap(): Bitmap = stickerView.createBitmap()
 
@@ -274,12 +301,6 @@ class ImageDrawingView @JvmOverloads constructor(
             .fitCenter()
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(glideCustomerTarget)
-    }
-
-    @MainThread
-    fun setHasLocation(has: Boolean) {
-        val imgRes: Int = if (has) R.drawable.ic_location_yes else R.drawable.ic_location_no
-        buttonLocation.setImageResource(imgRes)
     }
 
     @MainThread

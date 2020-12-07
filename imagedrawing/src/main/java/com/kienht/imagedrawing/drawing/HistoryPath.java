@@ -30,7 +30,9 @@ class HistoryPath implements Parcelable, Serializable {
     private transient Path path = null;
     private transient Paint paint = null;
 
-    HistoryPath(@NonNull ArrayList<Point> points, @NonNull Paint paint) {
+    private ShapeType shape;
+
+    HistoryPath(@NonNull ArrayList<Point> points, @NonNull Paint paint, @NonNull ShapeType shape) {
         this.points = new ArrayList<>(points);
         this.paintColor = paint.getColor();
         this.paintAlpha = paint.getAlpha();
@@ -38,6 +40,7 @@ class HistoryPath implements Parcelable, Serializable {
         this.originX = points.get(0).x;
         this.originY = points.get(0).y;
         this.isPoint = FreeDrawHelper.isAPoint(points);
+        this.shape = shape;
 
         generatePath();
         generatePaint();
@@ -47,27 +50,21 @@ class HistoryPath implements Parcelable, Serializable {
 
         path = new Path();
 
-        if (points != null) {
-            boolean first = true;
-
-            for (int i = 0; i < points.size(); i++) {
-
-                Point point = points.get(i);
-
-                if (first) {
-                    path.moveTo(point.x, point.y);
-                    first = false;
-                } else {
-                    path.lineTo(point.x, point.y);
-                }
-            }
-        }
+        FreeDrawHelper.generatePathOrDraw(points, shape, null, path, null);
     }
 
     private void generatePaint() {
 
-        paint = FreeDrawHelper.createPaintAndInitialize(paintColor, paintAlpha, paintWidth,
-                isPoint);
+        if (shape != ShapeType.Rectangle || isPoint) {
+            paint = FreeDrawHelper.createPaintAndInitialize(paintColor, paintAlpha, paintWidth,
+                    isPoint);
+        } else {
+            paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setColor(paintColor);
+            paint.setAlpha(paintAlpha);
+            paint.setStrokeWidth(paintWidth);
+        }
     }
 
     public Path getPath() {
@@ -158,6 +155,8 @@ class HistoryPath implements Parcelable, Serializable {
 
         isPoint = in.readByte() != 0;
 
+        shape = (ShapeType) in.readSerializable();
+
         generatePath();
         generatePaint();
     }
@@ -179,6 +178,8 @@ class HistoryPath implements Parcelable, Serializable {
         dest.writeFloat(originY);
 
         dest.writeByte((byte) (isPoint ? 1 : 0));
+
+        dest.writeSerializable(shape);
     }
 
     // Parcelable CREATOR class
@@ -200,6 +201,7 @@ class HistoryPath implements Parcelable, Serializable {
                 "Points: " + points + "\n" +
                 "Color: " + paintColor + "\n" +
                 "Alpha: " + paintAlpha + "\n" +
-                "Width: " + paintWidth;
+                "Width: " + paintWidth + "\n" +
+                "Shape: " + shape;
     }
 }

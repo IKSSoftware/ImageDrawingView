@@ -1,9 +1,12 @@
 package com.kienht.imagedrawing.drawing;
 
 import android.content.res.Resources;
+import android.graphics.Canvas;
 import android.graphics.ComposePathEffect;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
 
 import androidx.annotation.NonNull;
 
@@ -110,5 +113,101 @@ public class FreeDrawHelper {
      */
     public static float convertPixelsToDp(float px) {
         return px / Resources.getSystem().getDisplayMetrics().density;
+    }
+
+    /**
+     *  Draw on canvas a shape from points with path and paint. Or generate path (without canvas)
+     * @param points
+     * @param shape
+     * @param canvas Pass null if we only need to generate path only (Eg: for history path)
+     * @param path
+     * @param strokePaint Pass null if we only need to generate path only (Eg: for history path)
+     */
+    public static void generatePathOrDraw(List<Point> points, ShapeType shape, Canvas canvas, Path path, Paint strokePaint) {
+        // Initialize the current path
+        if (path == null)
+            path = new Path();
+        else
+            path.rewind();
+
+        if (shape == ShapeType.Free
+                || shape == ShapeType.Line) {
+
+            // If a single point, add a circle to the path
+            if (points.size() == 1 || FreeDrawHelper.isAPoint(points)) {
+
+                if (canvas == null) {
+                    return;
+                }
+
+                Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                paint.setStyle(Paint.Style.FILL);
+                paint.setColor(strokePaint.getColor());
+                paint.setAlpha(strokePaint.getAlpha());
+
+                canvas.drawCircle(points.get(0).x, points.get(0).y,
+                        paint.getStrokeWidth() / 2,
+                        paint);
+            } else if (points.size() != 0) {// Else draw the complete series of points
+
+                boolean first = true;
+
+                for (Point point : points) {
+
+                    if (first) {
+                        path.moveTo(point.x, point.y);
+                        first = false;
+                    } else {
+                        path.lineTo(point.x, point.y);
+                    }
+                }
+
+                if (canvas == null) {
+                    return;
+                }
+                canvas.drawPath(path, strokePaint);
+            }
+        } else if (shape == ShapeType.Rectangle) {
+
+            // If a single point, add a circle to the path
+            if (points.size() == 1 || FreeDrawHelper.isAPoint(points)) {
+
+                if (canvas == null) {
+                    return;
+                }
+
+                Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                paint.setStyle(Paint.Style.FILL);
+                paint.setColor(strokePaint.getColor());
+                paint.setAlpha(strokePaint.getAlpha());
+
+                canvas.drawCircle(points.get(0).x, points.get(0).y,
+                        paint.getStrokeWidth() / 2,
+                        paint);
+
+            } else if (points.size() == 2) {
+
+                RectF rectF = new RectF(
+                        Math.min(points.get(0).x, points.get(1).x),
+                        Math.min(points.get(0).y, points.get(1).y),
+                        Math.max(points.get(0).x, points.get(1).x),
+                        Math.max(points.get(0).y, points.get(1).y));
+                path.addRect(rectF, Path.Direction.CW);
+
+                if (canvas == null) {
+                    return;
+                }
+
+                Paint paint = FreeDrawHelper.createPaint();
+                paint.setColor(strokePaint.getColor());
+                paint.setAlpha(strokePaint.getAlpha());
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(strokePaint.getStrokeWidth());
+
+                canvas.drawPath(path, paint);
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid ShapeType");
+        }
     }
 }

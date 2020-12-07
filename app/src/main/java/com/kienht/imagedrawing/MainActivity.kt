@@ -4,14 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -39,11 +37,6 @@ class MainActivity : AppCompatActivity() {
 
         drawImageView = findViewById<ImageDrawingView>(R.id.image_drawing)
         drawImageView.loadImage(R.drawable.iphonex)
-        drawImageView.setDrawingCallback(object : DrawingViewCallback {
-            override fun onClickLocation() {
-                drawImageView.setHasLocation(true)
-            }
-        })
 
         imageTest = findViewById<ImageView>(R.id.image_test)
 

@@ -10,6 +10,7 @@ import android.graphics.Path;
 import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -28,6 +29,7 @@ import java.util.Collections;
  * Created by Riccardo Moro on 9/10/2016.
  */
 public class FreeDrawView extends View implements View.OnTouchListener, OnDrawBitmapAsyncCallback {
+
     private static final String TAG = FreeDrawView.class.getSimpleName();
 
     private static final float DEFAULT_STROKE_WIDTH = 4;
@@ -36,6 +38,7 @@ public class FreeDrawView extends View implements View.OnTouchListener, OnDrawBi
 
     private Paint mCurrentPaint;
     private Path mCurrentPath;
+    private Path mCurrentRectPath;
 
     private ResizeBehaviour mResizeBehaviour;
 
@@ -45,6 +48,8 @@ public class FreeDrawView extends View implements View.OnTouchListener, OnDrawBi
     private ArrayList<Point> mPoints = new ArrayList<>();
     private ArrayList<HistoryPath> mPaths = new ArrayList<>();
     private ArrayList<HistoryPath> mCanceledPaths = new ArrayList<>();
+
+    public ShapeType shapeType = ShapeType.Rectangle;
 
     @ColorInt
     private int mPaintColor = DEFAULT_COLOR;
@@ -562,7 +567,6 @@ public class FreeDrawView extends View implements View.OnTouchListener, OnDrawBi
         mFinishPath = false;
 
         for (HistoryPath currentPath : mPaths) {
-
             // If the path is just a single point, draw as a point
             if (currentPath.isPoint()) {
 
@@ -580,28 +584,7 @@ public class FreeDrawView extends View implements View.OnTouchListener, OnDrawBi
         else
             mCurrentPath.rewind();
 
-        // If a single point, add a circle to the path
-        if (mPoints.size() == 1 || FreeDrawHelper.isAPoint(mPoints)) {
-
-            canvas.drawCircle(mPoints.get(0).x, mPoints.get(0).y,
-                    mCurrentPaint.getStrokeWidth() / 2,
-                    createAndCopyColorAndAlphaForFillPaint(mCurrentPaint, false));
-        } else if (mPoints.size() != 0) {// Else draw the complete series of points
-
-            boolean first = true;
-
-            for (Point point : mPoints) {
-
-                if (first) {
-                    mCurrentPath.moveTo(point.x, point.y);
-                    first = false;
-                } else {
-                    mCurrentPath.lineTo(point.x, point.y);
-                }
-            }
-
-            canvas.drawPath(mCurrentPath, mCurrentPaint);
-        }
+        FreeDrawHelper.generatePathOrDraw(mPoints, shapeType, canvas, mCurrentPath, mCurrentPaint);
 
         // If the path is finished, add it to the history
         if (finishedPath && mPoints.size() > 0) {
@@ -611,7 +594,7 @@ public class FreeDrawView extends View implements View.OnTouchListener, OnDrawBi
 
     // Create a path from the current points
     private void createHistoryPathFromPoints() {
-        mPaths.add(new HistoryPath(mPoints, new Paint(mCurrentPaint)));
+        mPaths.add(new HistoryPath(mPoints, new Paint(mCurrentPaint), shapeType));
 
         mPoints = new ArrayList<>();
 
@@ -637,25 +620,55 @@ public class FreeDrawView extends View implements View.OnTouchListener, OnDrawBi
         // Clear all the history when restarting to draw
         mCanceledPaths = new ArrayList<>();
 
-        if ((motionEvent.getAction() != MotionEvent.ACTION_UP) &&
-                (motionEvent.getAction() != MotionEvent.ACTION_CANCEL)) {
-            Point point;
-            for (int i = 0; i < motionEvent.getHistorySize(); i++) {
-                point = new Point();
-                point.x = motionEvent.getHistoricalX(i);
-                point.y = motionEvent.getHistoricalY(i);
-                mPoints.add(point);
-            }
-            point = new Point();
-            point.x = motionEvent.getX();
-            point.y = motionEvent.getY();
-            mPoints.add(point);
-            mFinishPath = false;
-        } else
-            mFinishPath = true;
+        if (shapeType == ShapeType.Free) {
 
-        invalidate();
-        return true;
+            Log.d(TAG, "onTouch: Free");
+
+            if ((motionEvent.getAction() != MotionEvent.ACTION_UP) &&
+                    (motionEvent.getAction() != MotionEvent.ACTION_CANCEL)) {
+                Point point;
+                for (int i = 0; i < motionEvent.getHistorySize(); i++) {
+                    point = new Point();
+                    point.x = motionEvent.getHistoricalX(i);
+                    point.y = motionEvent.getHistoricalY(i);
+                    mPoints.add(point);
+                }
+                point = new Point();
+                point.x = motionEvent.getX();
+                point.y = motionEvent.getY();
+                mPoints.add(point);
+                mFinishPath = false;
+            } else
+                mFinishPath = true;
+
+            invalidate();
+            return true;
+        } else if (shapeType == ShapeType.Line
+                || shapeType == ShapeType.Rectangle) {
+
+            Log.d(TAG, "onTouch: Line || Rect");
+
+            if ((motionEvent.getAction() != MotionEvent.ACTION_UP) &&
+                    (motionEvent.getAction() != MotionEvent.ACTION_CANCEL)) {
+                Point point = new Point();
+                point.x = motionEvent.getX();
+                point.y = motionEvent.getY();
+
+                if (mPoints.size() >= 1) {
+                    Point firstPoint = mPoints.get(0);
+                    mPoints.clear();
+                    mPoints.add(firstPoint);
+                }
+                mPoints.add(point);
+                mFinishPath = false;
+            } else
+                mFinishPath = true;
+
+            invalidate();
+            return true;
+        } else {
+            throw new IllegalArgumentException("Invalid ShapeType");
+        }
     }
 
     @Override
