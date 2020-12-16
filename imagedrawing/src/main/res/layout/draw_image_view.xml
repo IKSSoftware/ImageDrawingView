@@ -111,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="@dimen/_10dp"
-                android:weightSum="5">
+                android:weightSum="4">
 
                 <ImageButton
                     android:id="@+id/drawing_button_undo"
@@ -155,6 +155,7 @@
                     android:src="@drawable/ic_draw_free_line_white" />
 
                 <ImageButton
+                    android:visibility="gone"
                     android:id="@+id/drawing_button_text"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/_50dp"

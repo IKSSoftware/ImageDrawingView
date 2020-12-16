@@ -111,11 +111,12 @@ class ImageDrawingView @JvmOverloads constructor(
                     lifecycleOwner(context)
                 }
                 cornerRadius(16f)
-                positiveButton(text = "Select")
                 colorChooser(
                     colors = colors,
-                    initialSelection = freeDrawView.paintColor
+                    initialSelection = freeDrawView.paintColor,
+                    waitForPositiveButton = false
                 ) { _, color ->
+                    dismiss()
                     freeDrawView.paintColor = color
                 }
             }

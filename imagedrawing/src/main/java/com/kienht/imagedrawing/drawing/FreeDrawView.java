@@ -33,7 +33,7 @@ public class FreeDrawView extends View implements View.OnTouchListener, OnDrawBi
     private static final String TAG = FreeDrawView.class.getSimpleName();
 
     private static final float DEFAULT_STROKE_WIDTH = 4;
-    private static final int DEFAULT_COLOR = Color.BLACK;
+    private static final int DEFAULT_COLOR = Color.RED;
     private static final int DEFAULT_ALPHA = 255;
 
     private Paint mCurrentPaint;
