@@ -21,7 +21,6 @@ import androidx.core.widget.doAfterTextChanged
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
-import com.afollestad.materialdialogs.color.ColorPalette
 import com.afollestad.materialdialogs.color.colorChooser
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.customListAdapter
@@ -72,9 +71,9 @@ class ImageDrawingView @JvmOverloads constructor(
     private val glideCustomerTarget: CustomTarget<Bitmap>
 
     private val shapeData = listOf(
-        ShapeData(R.drawable.ic_draw_free_line_white, "Free drawing"),
-        ShapeData(R.drawable.ic_draw_line_white, "Line drawing"),
-        ShapeData(R.drawable.ic_draw_rectangle_shape_white, "Rectangle drawing")
+        ShapeData(R.drawable.ic_draw_free_line_white, context.getString(R.string.free_draw)),
+        ShapeData(R.drawable.ic_draw_line_white, context.getString(R.string.line_draw)),
+        ShapeData(R.drawable.ic_draw_rectangle_shape_white, context.getString(R.string.rectangle_draw))
     )
 
     init {
@@ -90,8 +89,16 @@ class ImageDrawingView @JvmOverloads constructor(
             stickerView.text = it?.toString()
         }
 
+//        val colors =
+//            intArrayOf(BLACK, WHITE, RED, GREEN, BLUE, CYAN, YELLOW, MAGENTA, *ColorPalette.Primary)
         val colors =
-            intArrayOf(BLACK, WHITE, RED, GREEN, BLUE, CYAN, YELLOW, MAGENTA, *ColorPalette.Primary)
+            intArrayOf(
+                BLACK,
+                RED,
+                GREEN,
+                parseColor("#F44336"),
+                parseColor("#3F51B5"),
+            )
 
         freeDrawView.setOnTouchDrawViewListener(this)
 
@@ -147,7 +154,8 @@ class ImageDrawingView @JvmOverloads constructor(
                             )
                             dismiss()
                         }
-                    }))
+                    })
+                )
             }
         }
         val textButton = findViewById<ImageButton>(R.id.drawing_button_text)

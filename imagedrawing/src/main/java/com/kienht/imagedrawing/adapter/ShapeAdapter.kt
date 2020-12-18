@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.kienht.imagedrawing.R
@@ -16,7 +16,7 @@ interface ItemClickListener {
     fun onItemClick(position: Int)
 }
 
-class ShapeAdapter(private val dataSet: List<ShapeData>, val itemClickListener: ItemClickListener) :
+class ShapeAdapter(private val dataSet: List<ShapeData>, private val itemClickListener: ItemClickListener) :
     RecyclerView.Adapter<ShapeAdapter.ViewHolder>() {
 
     /**
@@ -26,7 +26,7 @@ class ShapeAdapter(private val dataSet: List<ShapeData>, val itemClickListener: 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView = view.findViewById(R.id.name)
         val imageView: ImageView = view.findViewById(R.id.imgView)
-        val linearLayout: LinearLayout = view.findViewById(R.id.layout)
+        val relativeLayout: RelativeLayout = view.findViewById(R.id.layout)
     }
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(viewGroup.context)
@@ -38,7 +38,7 @@ class ShapeAdapter(private val dataSet: List<ShapeData>, val itemClickListener: 
         viewHolder.textView.text = dataSet[position].name
         viewHolder.imageView.setImageResource(dataSet[position].imageRes)
 
-        viewHolder.linearLayout.setOnClickListener {
+        viewHolder.relativeLayout.setOnClickListener {
             itemClickListener.onItemClick(position = position)
         }
     }

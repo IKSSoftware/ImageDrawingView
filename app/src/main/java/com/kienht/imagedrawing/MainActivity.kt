@@ -35,10 +35,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        drawImageView = findViewById<ImageDrawingView>(R.id.image_drawing)
+        drawImageView = findViewById(R.id.image_drawing)
         drawImageView.loadImage(R.drawable.iphonex)
 
-        imageTest = findViewById<ImageView>(R.id.image_test)
+        imageTest = findViewById(R.id.image_test)
 
         val btnSelectImg = findViewById<ImageButton>(R.id.button_select_image)
         btnSelectImg.setOnClickListener {

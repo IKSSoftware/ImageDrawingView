@@ -1,28 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:id="@+id/layout"
     android:clickable="true"
     android:focusable="true">
 
         <ImageView
-            android:src="@drawable/ic_draw_line_white"
-            android:layout_gravity="center_horizontal"
-            android:tint="@android:color/black"
+            android:layout_centerVertical="true"
             android:id="@+id/imgView"
-            android:layout_width="@dimen/_48dp"
-            android:layout_height="@dimen/_48dp"/>
+            android:layout_width="55dp"
+            android:layout_height="@dimen/_48dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_draw_line_white"
+            app:tint="@android:color/black"
+            android:layout_toLeftOf="@+id/anchorView"/>
+
+        <View
+            android:id="@+id/anchorView"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout_centerInParent="true"/>
 
         <TextView
-            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/anchorView"
             android:id="@+id/name"
-            android:layout_marginStart="@dimen/_8dp"
-            android:layout_gravity="center_vertical"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/_8dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Name"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Name" />
+            android:visibility="visible" />
 
-</LinearLayout>
+</RelativeLayout>

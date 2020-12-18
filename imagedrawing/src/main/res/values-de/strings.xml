@@ -2,7 +2,7 @@
     <string name="app_name">Image Drawing</string>
     <string name="stroke_width">Stroke Width</string>
     <string name="stroke_alpha">Stroke Alpha</string>
-    <string name="free_draw">Free Draw</string>
-    <string name="line_draw">Line Draw</string>
-    <string name="rectangle_draw">Rectangle Draw</string>
+    <string name="free_draw">Stift</string>
+    <string name="line_draw">Linie</string>
+    <string name="rectangle_draw">Rechteck</string>
 </resources>
